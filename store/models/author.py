@@ -9,5 +9,8 @@ class Author(models.Model):
     book = models.ManyToManyField(to='store.Book', related_name="books")
     date_of_birth = models.DateField()
     
+
+    def __str__(self) -> str:
+        return self.name
     
 

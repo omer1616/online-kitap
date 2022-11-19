@@ -1,28 +1,27 @@
 from django.db  import models
-from store.models.category import  SubCategory
+from store.models.category import  Category
 from django.utils.text import slugify
 import itertools
 
 
-class BookManager(models.Manager):
+class ProductManager(models.Manager):
     def get_queryset(self):
-        return super(BookManager, self).get_queryset().filter(is_stock=True)
+        return super(ProductManager, self).get_queryset().filter(is_stock=True)
 
 
 
-class Book(models.Model):
+class Product(models.Model):
     name =  models.CharField(max_length=150)
     slug = models.SlugField(max_length=40, editable=False, unique=True, null=True)
     title = models.TextField(max_length=150)
-    image =  models.ImageField(upload_to="", verbose_name="Book Image", blank=True, null=True, on_delete=models.CASCADE)
-    author = models.ForeignKey(to='store.Author', related_name="authors")
+    image =  models.ImageField(upload_to="", verbose_name="Book Image", blank=True, null=True)
     price = models.IntegerField()
-    category = models.ForeignKey(to=SubCategory, blank=True, null=True,  on_delete=models.CASCADE)
+    category = models.ForeignKey(to=Category, blank=True, null=True,  on_delete=models.CASCADE)
     comment = models.TextField(max_length=150)
     created_date = models.DateField()
     is_stock = models.BooleanField(verbose_name="Stok", default=True)
     objects = models.Manager()    
-    books = BookManager()
+    products = ProductManager()
 
 
     def __str__(self) -> str:
@@ -34,9 +33,9 @@ class Book(models.Model):
             self.slug =  slugify(self.name)
             
             for slug_id in itertools.count(1):
-                if not Book.objects.filter(slug=self.slug):
+                if not Product.objects.filter(slug=self.slug):
                     break
                 self.slug = '%s-%d' % (self.slug, slug_id)   
 
-        super(Book, self).save(*args, **kwargs) # Call the real save() method
+        super(Product, self).save(*args, **kwargs) # Call the real save() method
        
